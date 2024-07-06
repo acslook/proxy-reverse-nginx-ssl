@@ -1,0 +1,36 @@
+name: webapiteste-ngnix
+
+networks:
+  proxy:
+    driver: bridge 
+
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./cert/nginx.crt:/etc/ssl/certs/nginx.crt
+      - ./cert/nginx.key:/etc/ssl/private/nginx.key
+      - ./cert/dhparam.pem:/etc/nginx/dhparam.pem
+      - ./self-signed.conf:/etc/nginx/snippets/self-signed.conf
+    ports:
+      - "80:80"
+      - "443:443"     
+    networks:
+      - proxy
+  
+  webapiteste1:
+    image:  webapiteste-ngnix:dev
+    environment:
+      - SERVER=A
+    networks:
+      - proxy
+
+  webapiteste2:
+    image:  webapiteste-ngnix:dev
+    environment:
+      - SERVER=B
+    networks:
+      - proxy
+   
+   
